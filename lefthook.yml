@@ -1,9 +1,9 @@
 pre-commit:
   parallel: true
   commands:
-    lint:
+    format:
       glob: '*.{js,ts,json,yml,yaml,md}'
-      run: pnpm exec prettier --check {staged_files}
+      run: pnpm exec prettier --write {staged_files} && git add {staged_files}
 
 commit-msg:
   commands:
