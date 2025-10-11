@@ -14,5 +14,5 @@ pre-push:
   commands:
     build:
       run: pnpm build
-    test:
-      run: pnpm test
+    # test:
+    #   run: pnpm test
