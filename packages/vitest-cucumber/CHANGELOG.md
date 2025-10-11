@@ -1,5 +1,11 @@
 # @deepracticex/vitest-cucumber
 
+## 1.0.1
+
+### Patch Changes
+
+- c4aa8c0: Fix {string} parameter expressions creating incorrect capture groups. The {string} regex now uses a single capture group instead of two, fixing parameter index mapping issues when mixed with other parameter types like {int}. This ensures {int} parameters correctly return number type instead of string.
+
 ## 1.0.0
 
 ### Major Changes
