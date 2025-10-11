@@ -92,16 +92,23 @@ export class CodeGenerator {
     const ind = '  '.repeat(indent);
 
     lines.push('');
-    lines.push(`${ind}it('${this.escapeString(scenario.name)}', async () => {`);
+    lines.push(
+      `${ind}it('${this.escapeString(scenario.name)}', async (context) => {`,
+    );
     lines.push(`${ind}  const hookRegistry = HookRegistry.getInstance();`);
-    lines.push(`${ind}  const contextManager = new ContextManager();`);
-    lines.push(`${ind}  const context = contextManager.getContext();`);
-    lines.push(`${ind}  const executor = new StepExecutor(context);`);
+    lines.push(`${ind}  // Reuse ContextManager from Background if available`);
+    lines.push(
+      `${ind}  const contextManager = context.contextManager || new ContextManager();`,
+    );
+    lines.push(`${ind}  const cucumberContext = contextManager.getContext();`);
+    lines.push(`${ind}  const executor = new StepExecutor(cucumberContext);`);
     lines.push('');
 
     // Execute Before hooks
     lines.push(`${ind}  // Execute Before hooks`);
-    lines.push(`${ind}  await hookRegistry.executeHooks('Before', context);`);
+    lines.push(
+      `${ind}  await hookRegistry.executeHooks('Before', cucumberContext);`,
+    );
     lines.push('');
 
     // Generate steps
@@ -112,7 +119,9 @@ export class CodeGenerator {
 
     // Execute After hooks
     lines.push(`${ind}  // Execute After hooks`);
-    lines.push(`${ind}  await hookRegistry.executeHooks('After', context);`);
+    lines.push(
+      `${ind}  await hookRegistry.executeHooks('After', cucumberContext);`,
+    );
 
     lines.push(`${ind}});`);
 
@@ -177,10 +186,13 @@ export class CodeGenerator {
     const ind = '  '.repeat(indent);
 
     lines.push('');
-    lines.push(`${ind}beforeEach(async () => {`);
-    lines.push(`${ind}  const contextManager = new ContextManager();`);
+    lines.push(`${ind}beforeEach(async (context) => {`);
     lines.push(
-      `${ind}  const executor = new StepExecutor(contextManager.getContext());`,
+      `${ind}  // Create shared ContextManager for Background and Scenario`,
+    );
+    lines.push(`${ind}  context.contextManager = new ContextManager();`);
+    lines.push(
+      `${ind}  const executor = new StepExecutor(context.contextManager.getContext());`,
     );
     lines.push('');
 
@@ -255,20 +267,29 @@ export class CodeGenerator {
 
         lines.push('');
         lines.push(
-          `${ind}  it('Example: ${this.escapeString(exampleDesc)}', async () => {`,
+          `${ind}  it('Example: ${this.escapeString(exampleDesc)}', async (context) => {`,
         );
         lines.push(
           `${ind}    const hookRegistry = HookRegistry.getInstance();`,
         );
-        lines.push(`${ind}    const contextManager = new ContextManager();`);
-        lines.push(`${ind}    const context = contextManager.getContext();`);
-        lines.push(`${ind}    const executor = new StepExecutor(context);`);
+        lines.push(
+          `${ind}    // Reuse ContextManager from Background if available`,
+        );
+        lines.push(
+          `${ind}    const contextManager = context.contextManager || new ContextManager();`,
+        );
+        lines.push(
+          `${ind}    const cucumberContext = contextManager.getContext();`,
+        );
+        lines.push(
+          `${ind}    const executor = new StepExecutor(cucumberContext);`,
+        );
         lines.push('');
 
         // Execute Before hooks
         lines.push(`${ind}    // Execute Before hooks`);
         lines.push(
-          `${ind}    await hookRegistry.executeHooks('Before', context);`,
+          `${ind}    await hookRegistry.executeHooks('Before', cucumberContext);`,
         );
         lines.push('');
 
@@ -285,7 +306,7 @@ export class CodeGenerator {
         // Execute After hooks
         lines.push(`${ind}    // Execute After hooks`);
         lines.push(
-          `${ind}    await hookRegistry.executeHooks('After', context);`,
+          `${ind}    await hookRegistry.executeHooks('After', cucumberContext);`,
         );
 
         lines.push(`${ind}  });`);
