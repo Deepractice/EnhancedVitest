@@ -115,7 +115,9 @@ export class ParameterTypeConverter {
     // Replace Cucumber expressions with appropriate regex patterns
     pattern = pattern.replace(/\{int\}/g, '(-?\\d+)');
     pattern = pattern.replace(/\{float\}/g, '(-?\\d+\\.?\\d*)');
-    pattern = pattern.replace(/\{string\}/g, '(?:"([^"]*)"|\'([^\']*)\')');
+    // Match quoted strings - simplified to just match content inside quotes
+    // This matches: "content" or 'content' and captures just the content
+    pattern = pattern.replace(/\{string\}/g, '["\\\']([^"\\\']*)["\\\']');
     pattern = pattern.replace(/\{word\}/g, '(\\S+)');
 
     // Anchor the pattern
