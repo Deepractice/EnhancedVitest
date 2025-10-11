@@ -1,4 +1,4 @@
-import { Given, When, Then } from '@cucumber/cucumber';
+import { Given, Then } from '@cucumber/cucumber';
 import { expect } from 'vitest';
 import fs from 'fs/promises';
 import path from 'path';
@@ -196,7 +196,7 @@ Given('I have a step that throws error', function() {
 
 Then(
   'Vitest should discover {int} test file(s)',
-  function (this: PluginTestContext, count: number) {
+  function (this: PluginTestContext, _count: number) {
     const output = this.execResult?.stdout || '';
     // Vitest shows test file count in output
     expect(output).toContain('Test Files');
@@ -216,8 +216,7 @@ Then(
 
 Then(
   'Vitest should execute {int} independent test(s)',
-  function (this: PluginTestContext, count: number) {
-    const output = this.execResult?.stdout || '';
+  function (this: PluginTestContext, _count: number) {
     // Check for test execution output
     expect(this.execResult?.exitCode).toBe(0);
     // Could count "✓" or "passed" but depends on reporter format
