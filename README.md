@@ -1,7 +1,8 @@
 # EnhancedVitest
 
-[![@deepracticex/vitest-cucumber](https://img.shields.io/npm/v/@deepracticex/vitest-cucumber?label=vitest-cucumber)](https://www.npmjs.com/package/@deepracticex/vitest-cucumber)
-[![@deepracticex/vitest-cucumber-plugin](https://img.shields.io/npm/v/@deepracticex/vitest-cucumber-plugin?label=vitest-cucumber-plugin)](https://www.npmjs.com/package/@deepracticex/vitest-cucumber-plugin)
+[![GitHub stars](https://img.shields.io/github/stars/Deepractice/EnhancedVitest?style=social)](https://github.com/Deepractice/EnhancedVitest)
+[![GitHub watchers](https://img.shields.io/github/watchers/Deepractice/EnhancedVitest?style=social)](https://github.com/Deepractice/EnhancedVitest)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 **The official Vitest enhancement suite for Deepractice projects.**
 
@@ -18,12 +19,19 @@ EnhancedVitest serves as the central hub for Deepractice's Vitest ecosystem:
 
 ## Packages
 
-### [@deepracticex/vitest-cucumber](./packages/vitest-cucumber)
+### [@deepracticex/vitest-cucumber](./packages/vitest-cucumber) [![npm version](https://img.shields.io/npm/v/@deepracticex/vitest-cucumber)](https://www.npmjs.com/package/@deepracticex/vitest-cucumber)
 
 Cucumber BDD integration for Vitest. Write behavior-driven tests using Gherkin syntax while leveraging Vitest's speed and developer experience.
 
 **Status**: ✅ Stable
 **Use Cases**: BDD testing, E2E scenarios, acceptance testing
+
+### [@deepracticex/vitest-cucumber-plugin](./packages/vitest-cucumber-plugin) [![npm version](https://img.shields.io/npm/v/@deepracticex/vitest-cucumber-plugin)](https://www.npmjs.com/package/@deepracticex/vitest-cucumber-plugin)
+
+Vitest plugin for transforming Cucumber feature files to test code.
+
+**Status**: ✅ Stable
+**Use Cases**: Feature file transformation, Vitest integration
 
 ## Roadmap
 
