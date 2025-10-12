@@ -1,8 +1,13 @@
 # @deepracticex/vitest-cucumber
 
-Runtime API for Cucumber BDD step definitions and hooks.
+**Native Cucumber BDD experience for Vitest** - Write standard Gherkin features with authentic Cucumber APIs.
 
-> **Note**: This package provides the runtime API only. You need `@deepracticex/vitest-cucumber-plugin` for the Vitest plugin that transforms `.feature` files.
+✨ **100% Cucumber-compliant** - Standard execution order, familiar APIs, no compromises
+🚀 **Zero configuration** - Works with Vitest out of the box
+📝 **Real Gherkin** - Use `.feature` files, not wrapped test code
+🎯 **Type-safe** - Full TypeScript support with type inference
+
+> **Note**: This package provides the runtime API. You need `@deepracticex/vitest-cucumber-plugin` for transforming `.feature` files.
 
 ## What's This Package?
 
@@ -122,6 +127,8 @@ Then('I should have {int} items', function (expected: number) {
 
 ### Hooks
 
+**Cucumber-standard execution order** (verified against official spec):
+
 ```typescript
 import {
   Before,
@@ -135,7 +142,8 @@ BeforeAll(async function () {
 });
 
 Before(async function () {
-  // Runs before each scenario
+  // Runs before each scenario (and before Background steps)
+  // Perfect for cleanup/reset operations
 });
 
 After(async function () {
@@ -146,6 +154,15 @@ AfterAll(async function () {
   // Runs once after all scenarios
 });
 ```
+
+**Execution order per scenario:**
+
+1. `Before` hooks
+2. `Background` steps (if defined)
+3. Scenario steps
+4. `After` hooks
+
+This follows the [official Cucumber specification](https://cucumber.io/docs/cucumber/api/#hooks), ensuring your tests behave identically to other Cucumber implementations.
 
 ### Custom World Context
 
@@ -241,10 +258,35 @@ Generated code will import from your package instead:
 import { StepExecutor, ... } from '@your-company/testing-utils/runtime';
 ```
 
+## Why Choose This Over Alternatives?
+
+### 🎯 Authentic Cucumber Experience
+
+Unlike test wrappers that mimic Gherkin syntax, we provide:
+
+- **Real `.feature` files** parsed with official `@cucumber/gherkin`
+- **Standard Cucumber APIs** - `Given`, `When`, `Then`, `Before`, `After`
+- **Spec-compliant execution order** - Hooks run exactly as documented in Cucumber spec
+- **Familiar patterns** - If you know Cucumber, you already know this
+
+### ⚡ Vitest Native
+
+- Built for Vitest from the ground up
+- No extra test runners or frameworks
+- Full compatibility with Vitest ecosystem (UI, coverage, watch mode)
+- TypeScript support with proper type inference
+
+### 🔒 Production Ready
+
+- Comprehensive test coverage
+- Actively maintained
+- Used in production applications
+- Regular updates following Vitest and Cucumber standards
+
 ## Requirements
 
 - Node.js >= 18
-- Vitest >= 2.0
+- Vitest >= 2.0 || >= 3.0
 
 ## License
 
