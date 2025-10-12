@@ -1,5 +1,11 @@
 # @deepracticex/vitest-cucumber
 
+## 1.1.0
+
+### Minor Changes
+
+- Unified version to 1.1.0 across all packages
+
 ## 1.0.1
 
 ### Patch Changes
