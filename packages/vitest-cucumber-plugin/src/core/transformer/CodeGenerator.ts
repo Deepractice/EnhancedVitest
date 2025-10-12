@@ -10,10 +10,14 @@ export class CodeGenerator {
     this.runtimeModule = runtimeModule;
   }
 
+  private hasBackground: boolean = false;
+
   /**
    * Generate test code for a feature
    */
   public generate(feature: Feature, stepFiles: string[] = []): string {
+    // Track if feature has background to determine where to execute Before hooks
+    this.hasBackground = !!feature.background;
     const lines: string[] = [];
 
     // Import statements
@@ -103,6 +107,15 @@ export class CodeGenerator {
     lines.push(`${ind}  const cucumberContext = contextManager.getContext();`);
     lines.push(`${ind}  const executor = new StepExecutor(cucumberContext);`);
     lines.push('');
+
+    // Execute Before hooks if no Background (otherwise they run in beforeEach)
+    if (!this.hasBackground) {
+      lines.push(`${ind}  // Execute Before hooks`);
+      lines.push(
+        `${ind}  await hookRegistry.executeHooks('Before', cucumberContext);`,
+      );
+      lines.push('');
+    }
 
     // Generate steps
     lines.push(`${ind}  // Execute steps`);
@@ -290,6 +303,15 @@ export class CodeGenerator {
           `${ind}    const executor = new StepExecutor(cucumberContext);`,
         );
         lines.push('');
+
+        // Execute Before hooks if no Background (otherwise they run in beforeEach)
+        if (!this.hasBackground) {
+          lines.push(`${ind}    // Execute Before hooks`);
+          lines.push(
+            `${ind}    await hookRegistry.executeHooks('Before', cucumberContext);`,
+          );
+          lines.push('');
+        }
 
         // Generate steps with replaced placeholders
         lines.push(`${ind}    // Execute steps`);
