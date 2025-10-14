@@ -1,6 +1,13 @@
 pre-commit:
   parallel: false
   commands:
+    install:
+      run: |
+        # Auto-stage pnpm-lock.yaml if changed by dependency updates
+        if git diff --name-only pnpm-lock.yaml | grep -q pnpm-lock.yaml; then
+          git add pnpm-lock.yaml
+          echo "✓ Auto-staged pnpm-lock.yaml"
+        fi
     format:
       glob: '*.{js,ts,json,yml,yaml,md}'
       run: pnpm exec prettier --write {staged_files} && git add {staged_files}
