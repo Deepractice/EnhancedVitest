@@ -25,7 +25,7 @@ export class CodeGenerator {
       "import { describe, it, beforeEach, afterEach, beforeAll, afterAll } from 'vitest';",
     );
     lines.push(
-      `import { StepExecutor, ContextManager, DataTable, HookRegistry } from '${this.runtimeModule}/runtime';`,
+      `import { StepExecutor, ContextManager, DataTable, HookRegistry, StepRegistry } from '${this.runtimeModule}/runtime';`,
     );
     lines.push('');
 
@@ -60,6 +60,12 @@ export class CodeGenerator {
     lines.push(
       "    await hookRegistry.executeHooks('AfterAll', contextManager.getContext());",
     );
+    lines.push('');
+    lines.push(
+      '    // Clean up global registries to prevent memory leaks and allow worker process to exit',
+    );
+    lines.push('    hookRegistry.clear();');
+    lines.push('    StepRegistry.getInstance().clear();');
     lines.push('  });');
 
     // Generate feature-level background
