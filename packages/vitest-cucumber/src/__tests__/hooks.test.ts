@@ -84,4 +84,103 @@ describe('Hooks API', () => {
     expect(registry.getHooks('After')).toHaveLength(1);
     expect(registry.getHooks('AfterAll')).toHaveLength(1);
   });
+
+  describe('Hook execution', () => {
+    it('should execute Before hook', async () => {
+      const executionLog: string[] = [];
+
+      Before(async function () {
+        executionLog.push('before-hook-executed');
+      });
+
+      const registry = HookRegistry.getInstance();
+      const mockContext = {} as any;
+
+      await registry.executeHooks('Before', mockContext);
+
+      expect(executionLog).toEqual(['before-hook-executed']);
+    });
+
+    it('should execute multiple Before hooks in order', async () => {
+      const executionLog: string[] = [];
+
+      Before(async function () {
+        executionLog.push('before-1');
+      });
+      Before(async function () {
+        executionLog.push('before-2');
+      });
+      Before(async function () {
+        executionLog.push('before-3');
+      });
+
+      const registry = HookRegistry.getInstance();
+      const mockContext = {} as any;
+
+      await registry.executeHooks('Before', mockContext);
+
+      expect(executionLog).toEqual(['before-1', 'before-2', 'before-3']);
+    });
+
+    it('should execute After hook', async () => {
+      const executionLog: string[] = [];
+
+      After(async function () {
+        executionLog.push('after-hook-executed');
+      });
+
+      const registry = HookRegistry.getInstance();
+      const mockContext = {} as any;
+
+      await registry.executeHooks('After', mockContext);
+
+      expect(executionLog).toEqual(['after-hook-executed']);
+    });
+
+    it('should pass context to hook function', async () => {
+      let capturedContext: any = null;
+
+      Before(async function () {
+        capturedContext = this;
+      });
+
+      const registry = HookRegistry.getInstance();
+      const mockContext = { testData: 'test-value' } as any;
+
+      await registry.executeHooks('Before', mockContext);
+
+      expect(capturedContext).toBe(mockContext);
+      expect(capturedContext.testData).toBe('test-value');
+    });
+
+    it('should execute BeforeAll hook', async () => {
+      const executionLog: string[] = [];
+
+      BeforeAll(async function () {
+        executionLog.push('before-all-executed');
+      });
+
+      const registry = HookRegistry.getInstance();
+      const mockContext = {} as any;
+
+      await registry.executeHooks('BeforeAll', mockContext);
+
+      expect(executionLog).toEqual(['before-all-executed']);
+    });
+
+    it('should execute AfterAll hook', async () => {
+      const executionLog: string[] = [];
+
+      AfterAll(async function () {
+        executionLog.push('after-all-executed');
+      });
+
+      const registry = HookRegistry.getInstance();
+      const mockContext = {} as any;
+
+      await registry.executeHooks('AfterAll', mockContext);
+
+      expect(executionLog).toEqual(['after-all-executed']);
+    });
+  });
 });

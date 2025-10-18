@@ -64,12 +64,12 @@ describe('Background Context Sharing', () => {
       'const contextManager = context.contextManager || new ContextManager();',
     );
 
-    // Verify executor uses the shared context
+    // Verify executor uses the shared context with feature-scoped registry
     expect(code).toContain(
       'const cucumberContext = contextManager.getContext();',
     );
     expect(code).toContain(
-      'const executor = new StepExecutor(cucumberContext);',
+      'const executor = new StepExecutor(cucumberContext, __featureStepRegistry__);',
     );
   });
 

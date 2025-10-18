@@ -38,7 +38,8 @@ Feature: Test Feature
 
     const result = transformer.transform(featureContent, 'test.feature');
 
-    expect(result).toContain("from '@deepracticex/vitest-cucumber/runtime'");
+    expect(result).toContain("from '@deepracticex/vitest-cucumber'");
+    expect(result).not.toContain('/runtime');
   });
 
   it('should use custom runtime module when provided', () => {
@@ -54,8 +55,10 @@ Feature: Test Feature
 
     const result = transformer.transform(featureContent, 'test.feature');
 
-    expect(result).toContain("from '@custom/runtime-module/runtime'");
+    expect(result).toContain("from '@custom/runtime-module'");
     expect(result).not.toContain('@deepracticex/vitest-cucumber');
+    // Note: We removed the check for '/runtime' as it's no longer relevant
+    // since we now use a single entry point approach
   });
 
   it('should generate code with DataTable', () => {

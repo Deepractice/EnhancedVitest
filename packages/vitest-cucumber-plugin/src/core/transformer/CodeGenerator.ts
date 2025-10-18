@@ -24,12 +24,13 @@ export class CodeGenerator {
     lines.push(
       "import { describe, it, beforeEach, afterEach, beforeAll, afterAll } from 'vitest';",
     );
+    // IMPORTANT: Import from main entry point to ensure singleton module instance
     lines.push(
-      `import { StepExecutor, ContextManager, DataTable, HookRegistry, StepRegistry, __setCurrentFeatureContext__ } from '${this.runtimeModule}/runtime';`,
+      `import { StepExecutor, ContextManager, DataTable, HookRegistry, StepRegistry, __setCurrentFeatureContext__ } from '${this.runtimeModule}';`,
     );
     lines.push('');
 
-    // Create feature-scoped registries BEFORE importing step files
+    // Create feature-scoped registries
     lines.push('// Create feature-scoped registries for test isolation');
     lines.push(
       'const __featureStepRegistry__ = StepRegistry.createFeatureScoped();',
@@ -38,38 +39,45 @@ export class CodeGenerator {
       'const __featureHookRegistry__ = HookRegistry.createFeatureScoped();',
     );
     lines.push('');
-    lines.push('// Set feature context for step definition loading');
-    lines.push('__setCurrentFeatureContext__({');
-    lines.push('  stepRegistry: __featureStepRegistry__,');
-    lines.push('  hookRegistry: __featureHookRegistry__,');
-    lines.push('});');
-    lines.push('');
-
-    // Import step definitions and hooks
-    // These will be registered to the feature-scoped registries
-    if (stepFiles.length > 0) {
-      lines.push(
-        '// Step definitions and hooks (registered to feature-scoped registries)',
-      );
-      for (const stepFile of stepFiles) {
-        // Use absolute path from project root
-        const importPath = `/${stepFile.replace(/\\/g, '/').replace(/\.ts$/, '')}`;
-        lines.push(`import '${importPath}';`);
-      }
-      lines.push('');
-    }
-
-    // Clear feature context after loading
-    lines.push('// Clear context after step definition loading');
-    lines.push('__setCurrentFeatureContext__(null);');
-    lines.push('');
 
     // Feature describe block
     lines.push(`describe('${this.escapeString(feature.name)}', () => {`);
 
-    // Generate BeforeAll/AfterAll hooks (use feature-scoped registries)
+    // Load step files in beforeAll to avoid ES module hoisting issues
     lines.push('');
     lines.push('  beforeAll(async () => {');
+    lines.push('    // Load step definitions with feature context active');
+    lines.push('    // Using dynamic import to avoid ES module hoisting');
+    lines.push('    __setCurrentFeatureContext__({');
+    lines.push('      stepRegistry: __featureStepRegistry__,');
+    lines.push('      hookRegistry: __featureHookRegistry__,');
+    lines.push('    });');
+    lines.push('');
+
+    // Dynamic imports for step files
+    if (stepFiles.length > 0) {
+      lines.push(
+        '    // Import step definitions and hooks (registered to feature-scoped registries)',
+      );
+      for (const stepFile of stepFiles) {
+        // Convert to forward slashes and remove .ts extension
+        // Use absolute path with file:// protocol for ESM compatibility
+        const normalizedPath = stepFile
+          .replace(/\\/g, '/')
+          .replace(/\.ts$/, '');
+        // Vite needs absolute paths starting from project root with leading slash
+        const importPath = normalizedPath.startsWith('/')
+          ? normalizedPath
+          : `/${normalizedPath}`;
+        lines.push(`    await import('${importPath}');`);
+      }
+      lines.push('');
+    }
+
+    lines.push('    // Clear feature context after loading');
+    lines.push('    __setCurrentFeatureContext__(null);');
+    lines.push('');
+    lines.push('    // Execute BeforeAll hooks');
     lines.push('    const contextManager = new ContextManager();');
     lines.push(
       "    await __featureHookRegistry__.executeHooks('BeforeAll', contextManager.getContext());",
@@ -131,7 +139,9 @@ export class CodeGenerator {
       `${ind}  const contextManager = context.contextManager || new ContextManager();`,
     );
     lines.push(`${ind}  const cucumberContext = contextManager.getContext();`);
-    lines.push(`${ind}  const executor = new StepExecutor(cucumberContext);`);
+    lines.push(
+      `${ind}  const executor = new StepExecutor(cucumberContext, __featureStepRegistry__);`,
+    );
     lines.push('');
 
     // Execute Before hooks if no Background (otherwise they run in beforeEach)
@@ -236,7 +246,9 @@ export class CodeGenerator {
     lines.push('');
 
     // Now execute Background steps
-    lines.push(`${ind}  const executor = new StepExecutor(cucumberContext);`);
+    lines.push(
+      `${ind}  const executor = new StepExecutor(cucumberContext, __featureStepRegistry__);`,
+    );
     lines.push('');
 
     // Generate background steps
@@ -322,7 +334,7 @@ export class CodeGenerator {
           `${ind}    const cucumberContext = contextManager.getContext();`,
         );
         lines.push(
-          `${ind}    const executor = new StepExecutor(cucumberContext);`,
+          `${ind}    const executor = new StepExecutor(cucumberContext, __featureStepRegistry__);`,
         );
         lines.push('');
 

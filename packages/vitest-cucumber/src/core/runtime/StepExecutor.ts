@@ -9,8 +9,8 @@ export class StepExecutor {
   private registry: StepRegistry;
   private context: StepContext;
 
-  constructor(context: StepContext) {
-    this.registry = StepRegistry.getInstance();
+  constructor(context: StepContext, registry?: StepRegistry) {
+    this.registry = registry || StepRegistry.getInstance();
     this.context = context;
   }
 
