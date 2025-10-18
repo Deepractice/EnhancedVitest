@@ -1,5 +1,16 @@
 # @deepracticex/vitest-cucumber
 
+## 1.2.4
+
+### Patch Changes
+
+- e4b502c: fix: StepExecutor now uses feature-scoped registry
+
+  Fixed issue where step definitions were not found during test execution. The StepExecutor now accepts an optional registry parameter and the CodeGenerator passes the feature-scoped registry to ensure step definitions are properly registered and found at runtime.
+
+- Updated dependencies [e4b502c]
+  - @deepracticex/vitest-cucumber-plugin@1.2.4
+
 ## 1.2.3
 
 ### Patch Changes
