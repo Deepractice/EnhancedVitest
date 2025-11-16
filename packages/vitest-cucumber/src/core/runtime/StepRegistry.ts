@@ -157,18 +157,21 @@ export class StepRegistry {
 
   /**
    * Find a step definition that matches the given text
+   *
+   * Per Cucumber standard: "Keywords are not taken into account when looking for a step definition"
+   * This means Given/When/Then/And/But are ignored during matching - only the text pattern matters.
+   *
+   * @param _type - Step keyword (ignored per Cucumber standard, kept for API compatibility)
+   * @param text - Step text to match
+   * @see https://cucumber.io/docs/gherkin/reference/
    */
   public findMatch(
-    type: StepType,
+    _type: StepType,
     text: string,
   ): { step: ExtendedStepDefinition; matches: RegExpMatchArray | null } | null {
     for (const step of this.steps) {
-      // Skip if type doesn't match (except for And/But which inherit from previous)
-      if (type !== 'And' && type !== 'But' && step.type !== type) {
-        continue;
-      }
-
-      // Use the compiled regex for matching
+      // Per Cucumber standard: ignore keywords, only match text
+      // A step defined with Given("...") can be called with When/Then/And/But
       const matches = text.match(step.regex);
       if (matches) {
         return { step, matches };
