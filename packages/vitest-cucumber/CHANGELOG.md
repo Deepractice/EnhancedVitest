@@ -1,5 +1,12 @@
 # @deepracticex/vitest-cucumber
 
+## 1.4.4
+
+### Patch Changes
+
+- Updated dependencies [73e46cb]
+  - @deepracticex/vitest-cucumber-plugin@1.4.4
+
 ## 1.4.3
 
 ### Patch Changes
