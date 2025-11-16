@@ -4,3 +4,4 @@ build
 coverage
 pnpm-lock.yaml
 *.min.js
+.changeset/*.md
