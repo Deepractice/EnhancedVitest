@@ -62,16 +62,21 @@ export class StepExecutor {
     // Add captured groups from regex with type conversion
     if (matches) {
       // Skip the first element (full match) and add captured groups
+      // Track actual parameter index (skipping undefined captures)
+      let paramIndex = 0;
+
       for (let i = 1; i < matches.length; i++) {
         const capturedValue = matches[i];
 
-        // Skip undefined captures (can happen with optional groups)
+        // Skip undefined captures (can happen with optional groups or alternation)
         if (capturedValue === undefined) {
           continue;
         }
 
-        // Find corresponding parameter type
-        const paramInfo = stepDef.parameterTypes.find((p) => p.index === i - 1);
+        // Find corresponding parameter type using actual parameter index
+        const paramInfo = stepDef.parameterTypes.find(
+          (p) => p.index === paramIndex,
+        );
 
         if (paramInfo) {
           // Convert based on parameter type
@@ -82,6 +87,8 @@ export class StepExecutor {
           // No type info, keep as string
           args.push(capturedValue);
         }
+
+        paramIndex++;
       }
     }
 

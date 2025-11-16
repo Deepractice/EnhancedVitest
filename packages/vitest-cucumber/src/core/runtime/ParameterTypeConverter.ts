@@ -117,8 +117,11 @@ export class ParameterTypeConverter {
     pattern = pattern.replace(/\{float\}/g, '(-?\\d+\\.?\\d*)');
     // Match quoted strings - support apostrophes/contractions inside strings
     // This matches: "content with 's" or 'content with "s' and captures the content
-    // Uses non-greedy match and handles both quote types separately
-    pattern = pattern.replace(/\{string\}/g, '"([^"]*)"|\\\'([^\\\']*)\\\'');
+    // Uses non-capturing group for alternation, with two capturing groups for content
+    pattern = pattern.replace(
+      /\{string\}/g,
+      '(?:"([^"]*)"|\\\'([^\\\']*)\\\')',
+    );
     pattern = pattern.replace(/\{word\}/g, '(\\S+)');
 
     // Anchor the pattern
